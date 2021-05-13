@@ -60,7 +60,7 @@ namespace PokeriPeli
 
                 foreach (var player in testTable.players)
                 {
-                    if (player.handType == HandType.FourOfAKind)
+                    if (player.handType == HandType.ThreeOfAKind)
                     {
                         boolean = true;
                     }
@@ -314,7 +314,7 @@ namespace PokeriPeli
                 {
                     if (chain == 3)
                     {
-                        return new Tuple<HandType, int>(HandType.FourOfAKind, card.value + card.value - 1 + card.value - 2 + card.value - 3 + cards[cards.Count-1].value);
+                        return new Tuple<HandType, int>(HandType.FourOfAKind, card.value * 4000 + cards[cards.Count-5].value);
                     }
                     break;
                 }
@@ -329,7 +329,11 @@ namespace PokeriPeli
                 {
                     if (chain == 3)
                     {
-                        return new Tuple<HandType, int>(HandType.FourOfAKind, card.value + card.value - 1 + card.value - 2 + card.value - 3 + cards[cards.Count-1].value);
+                        if (card.value == 1)
+                        {
+                            return new Tuple<HandType, int>(HandType.FourOfAKind, card.value * 40000 + cards[cards.Count-1].value);
+                        }
+                        return new Tuple<HandType, int>(HandType.FourOfAKind, card.value * 4000 + cards[cards.Count-1].value);
                     }
                     chain = 0;
                 }
@@ -375,7 +379,40 @@ namespace PokeriPeli
             }
             
             // Three of a kind
-            //TODO: Same as straight checking but chain raises if is same value
+            chain = 0;
+            for (int i = 0; i < cards.Count; i++)
+            {
+                Card card = cards[i];
+
+                if (i == cards.Count - 1)
+                {
+                    if (chain == 2)
+                    {
+                        Console.WriteLine(card.value * 3000 + cards[cards.Count-4].value + cards[cards.Count-5].value);
+                        return new Tuple<HandType, int>(HandType.ThreeOfAKind, card.value * 3000 + cards[cards.Count-3].value + cards[cards.Count-4].value);
+                    }
+                    break;
+                }
+                
+                //Console.WriteLine(card.value + " " + card.color + " " + cards[i + 1].value +  " " + cards[i+1].color);
+                
+                if (card.value == cards[i + 1].value)
+                {
+                    chain++;
+                }
+                else
+                {
+                    if (chain == 2)
+                    {
+                        if (card.value == 1)
+                        {
+                            return new Tuple<HandType, int>(HandType.ThreeOfAKind, card.value * 30000 + cards[cards.Count-1].value + cards.OrderByDescending(x => x.value).ToList().FirstOrDefault(x => x.value != card.value && x != cards[cards.Count-1]).value);
+                        }
+                        return new Tuple<HandType, int>(HandType.ThreeOfAKind, card.value * 3000 + cards[cards.Count-1].value + cards.OrderByDescending(x => x.value).ToList().FirstOrDefault(x => x.value != card.value && x != cards[cards.Count-1]).value);
+                    }
+                    chain = 0;
+                }
+            }
             
             // Two pairs
             //TODO: Start counting all pairs found
