@@ -418,9 +418,39 @@ namespace PokeriPeli
             //TODO: Start counting all pairs found
             
             // Pair
-            //TODO: Same as straight checking but chain raises if is same value
+            for (int i = 0; i < cards.Count; i++)
+            {
+                Card card = cards[i];
+
+                if (i == cards.Count - 1)
+                {
+                    if (chain == 1)
+                    {
+                        return new Tuple<HandType, int>(HandType.Pair, card.value * 2000 + cards[cards.Count-2].value + cards[cards.Count-3].value + cards[cards.Count-4].value);
+                    }
+                    break;
+                }
+
+                if (card.value == cards[i + 1].value)
+                {
+                    chain++;
+                }
+                else
+                {
+                    if (chain == 1)
+                    {
+                        if (card.value == 1)
+                        {
+                            return new Tuple<HandType, int>(HandType.Pair, card.value * 20000 + cards[cards.Count-1].value + cards.OrderByDescending(x => x.value).ToList().FirstOrDefault(x => x.value != card.value && x != cards[cards.Count-1]).value);
+                        }
+                        return new Tuple<HandType, int>(HandType.Pair, card.value * 2000 + cards[cards.Count-1].value + cards.OrderByDescending(x => x.value).ToList().FirstOrDefault(x => x.value != card.value && x != cards[cards.Count-1]).value);
+                    }
+                    chain = 0;
+                }
+            }
             
             // High
+            //TODO: Fix value
             return new Tuple<HandType, int>(HandType.High, cards[cards.Count - 1].value + cards[cards.Count - 2].value + cards[cards.Count - 3].value + cards[cards.Count - 4].value + cards[cards.Count - 5].value);
         }
     }
