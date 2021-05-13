@@ -60,7 +60,7 @@ namespace PokeriPeli
 
                 foreach (var player in testTable.players)
                 {
-                    if (player.handType == HandType.StraightFlush)
+                    if (player.handType == HandType.FourOfAKind)
                     {
                         boolean = true;
                     }
@@ -288,7 +288,7 @@ namespace PokeriPeli
                 if (card.value + 1 == cards[i + 1].value && card.color == cards[i+1].color)
                 {
                     chain++;
-                    Console.WriteLine(card.value + " " + card.color + " " + cards[i + 1].value +  " " + cards[i+1].color);
+                    //Console.WriteLine(card.value + " " + card.color + " " + cards[i + 1].value +  " " + cards[i+1].color);
                 }
                 else if (card.value == cards[i + 1].value)
                 {
@@ -312,12 +312,14 @@ namespace PokeriPeli
 
                 if (i == cards.Count - 1)
                 {
-                    if (chain == 4)
+                    if (chain == 3)
                     {
                         return new Tuple<HandType, int>(HandType.FourOfAKind, card.value + card.value - 1 + card.value - 2 + card.value - 3 + cards[cards.Count-1].value);
                     }
                     break;
                 }
+                
+                //Console.WriteLine(card.value + " " + card.color + " " + cards[i + 1].value +  " " + cards[i+1].color);
                 
                 if (card.value == cards[i + 1].value)
                 {
@@ -325,7 +327,7 @@ namespace PokeriPeli
                 }
                 else
                 {
-                    if (chain == 4)
+                    if (chain == 3)
                     {
                         return new Tuple<HandType, int>(HandType.FourOfAKind, card.value + card.value - 1 + card.value - 2 + card.value - 3 + cards[cards.Count-1].value);
                     }
