@@ -450,8 +450,7 @@ namespace PokeriPeli
             }
             
             // High
-            //TODO: Fix value
-            return new Tuple<HandType, int>(HandType.High, cards[cards.Count - 1].value + cards[cards.Count - 2].value + cards[cards.Count - 3].value + cards[cards.Count - 4].value + cards[cards.Count - 5].value);
+            return new Tuple<HandType, int>(HandType.High, cards[cards.Count - 1].value * 10000 + cards[cards.Count - 2].value * 1000 + cards[cards.Count - 3].value * 100 + cards[cards.Count - 4].value * 10 + cards[cards.Count - 5].value);
         }
     }
 
