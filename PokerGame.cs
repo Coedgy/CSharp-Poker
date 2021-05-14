@@ -318,9 +318,7 @@ namespace PokeriPeli
                     }
                     break;
                 }
-                
-                //Console.WriteLine(card.value + " " + card.color + " " + cards[i + 1].value +  " " + cards[i+1].color);
-                
+
                 if (card.value == cards[i + 1].value)
                 {
                     chain++;
@@ -357,13 +355,13 @@ namespace PokeriPeli
                         List<Card> flushHand = cards.FindAll(x => x.color == card.color).ToList().OrderByDescending(x => x.value).ToList();
                         for (int j = 1; j < 6; j++)
                         {
-                            if (flushHand[i-1].value == 1)
+                            if (flushHand[j-1].value == 1)
                             {
-                                handValue += flushHand[i-1].value * (i) * 10000;
+                                handValue += flushHand[j-1].value * j * 10000;
                             }
                             else
                             {
-                                handValue += flushHand[i-1].value * (i) * 1000;
+                                handValue += flushHand[j-1].value * j * 1000;
                             }
                         }
                         return new Tuple<HandType, int>(HandType.Flush, handValue);
@@ -381,16 +379,15 @@ namespace PokeriPeli
                     {
                         int handValue = 0;
                         List<Card> flushHand = cards.FindAll(x => x.color == card.color).ToList().OrderByDescending(x => x.value).ToList();
-                        flushHand.ForEach(x => Console.WriteLine(x.color + " " + x.value));
                         for (int j = 1; j < 6; j++)
                         {
-                            if (flushHand[i-1].value == 1)
+                            if (flushHand[j-1].value == 1)
                             {
-                                handValue += flushHand[i-1].value * (i) * 10000;
+                                handValue += flushHand[j-1].value * j * 10000;
                             }
                             else
                             {
-                                handValue += flushHand[i-1].value * (i) * 1000;
+                                handValue += flushHand[j-1].value * j * 1000;
                             }
                         }
                         return new Tuple<HandType, int>(HandType.Flush, handValue);
