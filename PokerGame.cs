@@ -21,7 +21,7 @@ namespace PokeriPeli
 
         static void CreateTestTable()
         {
-            bool boolean = false; 
+            bool boolean = true; 
             do
             {
                 PokerTable testTable = new PokerTable();
@@ -42,6 +42,14 @@ namespace PokeriPeli
             
                 System.Console.WriteLine(" - ");
                 testTable.DealCards();
+
+                // testTable.board[0].value = 8;
+                // testTable.board[1].value = 8;
+                // testTable.board[2].value = 12;
+                // testTable.board[3].value = 13;
+                // testTable.board[4].value = 1;
+                // testTable.players[0].handCards[0].value = 7;
+                // testTable.players[0].handCards[1].value = 7;
 
                 testTable.CalculateHands();
             
@@ -264,12 +272,14 @@ namespace PokeriPeli
         public static Tuple<HandType, int> GetBestHand(List<Card> hand, List<Card> board)
         {
             List<Card> cards = new List<Card>();
+            List<Card> cardsDesc = new List<Card>();
             board.ForEach(x => cards.Add(x));
             hand.ForEach(x => cards.Add(x));
             cards.FindAll(x => x.value == 1).ToList().ForEach(x => cards.Add(new Card(){color = x.color, ID = x.ID, value = 14}));
 
             cards = cards.OrderBy(x => x.value).ToList();
-
+            cardsDesc = cards.OrderByDescending(x => x.value).ToList();
+            
             // Straight flush
             int chain = 0;
             for (int i = 0; i < cards.Count; i++)
@@ -306,11 +316,11 @@ namespace PokeriPeli
             
             // Four of a kind
             chain = 0;
-            for (int i = 0; i < cards.Count; i++)
+            for (int i = 0; i < cardsDesc.Count; i++)
             {
-                Card card = cards[i];
+                Card card = cardsDesc[i];
 
-                if (i == cards.Count - 1)
+                if (i == cardsDesc.Count - 1)
                 {
                     if (chain == 3)
                     {
@@ -319,7 +329,7 @@ namespace PokeriPeli
                     break;
                 }
 
-                if (card.value == cards[i + 1].value)
+                if (card.value == cardsDesc[i + 1].value)
                 {
                     chain++;
                 }
@@ -431,9 +441,9 @@ namespace PokeriPeli
             
             // Three of a kind
             chain = 0;
-            for (int i = 0; i < cards.Count; i++)
+            for (int i = 0; i < cardsDesc.Count; i++)
             {
-                Card card = cards[i];
+                Card card = cardsDesc[i];
 
                 if (i == cards.Count - 1)
                 {
@@ -447,7 +457,7 @@ namespace PokeriPeli
                 
                 //Console.WriteLine(card.value + " " + card.color + " " + cards[i + 1].value +  " " + cards[i+1].color);
                 
-                if (card.value == cards[i + 1].value)
+                if (card.value == cardsDesc[i + 1].value)
                 {
                     chain++;
                 }
@@ -470,11 +480,11 @@ namespace PokeriPeli
             
             // Pair
             chain = 0;
-            for (int i = 0; i < cards.Count; i++)
+            for (int i = 0; i < cardsDesc.Count; i++)
             {
-                Card card = cards[i];
+                Card card = cardsDesc[i];
 
-                if (i == cards.Count - 1)
+                if (i == cardsDesc.Count - 1)
                 {
                     if (chain == 1)
                     {
@@ -483,7 +493,7 @@ namespace PokeriPeli
                     break;
                 }
 
-                if (card.value == cards[i + 1].value)
+                if (card.value == cardsDesc[i + 1].value)
                 {
                     chain++;
                 }
