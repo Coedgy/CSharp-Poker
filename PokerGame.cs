@@ -60,7 +60,7 @@ namespace PokeriPeli
 
                 foreach (var player in testTable.players)
                 {
-                    if (player.handType == HandType.Pair)
+                    if (player.handType == HandType.Flush)
                     {
                         boolean = true;
                     }
@@ -340,10 +340,64 @@ namespace PokeriPeli
             }
             
             //Full house
-            //TODO: Count three of a kind and pair
+            //TODO: Count three of a kind, then find pair from list that excludes the found three-of-a-kind
             
             //Flush
-            //TODO: Same as straight checking but chain raises if is same color
+            List<Card> cardsByColor = cards.OrderBy(x => x.color).ToList();
+            chain = 0;
+            for (int i = 0; i < cards.Count; i++)
+            {
+                Card card = cardsByColor[i];
+
+                if (i == cards.Count - 1)
+                {
+                    if (chain == 4)
+                    {
+                        int handValue = 0;
+                        List<Card> flushHand = cards.FindAll(x => x.color == card.color).ToList().OrderByDescending(x => x.value).ToList();
+                        for (int j = 1; j < 6; j++)
+                        {
+                            if (flushHand[i-1].value == 1)
+                            {
+                                handValue += flushHand[i-1].value * (i) * 10000;
+                            }
+                            else
+                            {
+                                handValue += flushHand[i-1].value * (i) * 1000;
+                            }
+                        }
+                        return new Tuple<HandType, int>(HandType.Flush, handValue);
+                    }
+                    break;
+                }
+                
+                if (card.color == cardsByColor[i + 1].color && card.value != 1)
+                {
+                    chain++;
+                }
+                else
+                {
+                    if (chain == 4)
+                    {
+                        int handValue = 0;
+                        List<Card> flushHand = cards.FindAll(x => x.color == card.color).ToList().OrderByDescending(x => x.value).ToList();
+                        flushHand.ForEach(x => Console.WriteLine(x.color + " " + x.value));
+                        for (int j = 1; j < 6; j++)
+                        {
+                            if (flushHand[i-1].value == 1)
+                            {
+                                handValue += flushHand[i-1].value * (i) * 10000;
+                            }
+                            else
+                            {
+                                handValue += flushHand[i-1].value * (i) * 1000;
+                            }
+                        }
+                        return new Tuple<HandType, int>(HandType.Flush, handValue);
+                    }
+                    chain = 0;
+                }
+            }
             
             // Straight
             chain = 0;
@@ -418,6 +472,7 @@ namespace PokeriPeli
             //TODO: Start counting all pairs found
             
             // Pair
+            chain = 0;
             for (int i = 0; i < cards.Count; i++)
             {
                 Card card = cards[i];
