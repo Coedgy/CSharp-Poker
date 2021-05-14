@@ -476,7 +476,67 @@ namespace PokeriPeli
             }
             
             // Two pairs
-            //TODO: Start counting all pairs found
+            List<Card> firstPair = new List<Card>();
+            chain = 0;
+            for (int i = 0; i < cardsDesc.Count; i++)
+            {
+                Card card = cardsDesc[i];
+
+                if (i == cardsDesc.Count - 1)
+                {
+                    if (chain == 1)
+                    {
+                        firstPair.Add(card);
+                        firstPair.Add(cardsDesc[i-1]);
+                    }
+                    break;
+                }
+
+                if (card.value == cardsDesc[i + 1].value)
+                {
+                    chain++;
+                }
+                else
+                {
+                    if (chain == 1)
+                    {
+                        firstPair.Add(card);
+                        firstPair.Add(cardsDesc[i - 1]);
+                        break;
+                    }
+                    
+                    chain = 0;
+                }
+            }
+
+            chain = 0;
+            for (int i = 0; i < cardsDesc.Count; i++)
+            {
+                Card card = cardsDesc[i];
+
+                if (i == cardsDesc.Count - 1)
+                {
+                    if (chain == 1)
+                    {
+                        return new Tuple<HandType, int>(HandType.TwoPairs, firstPair[0].value * 20000 + firstPair[1].value * 20000 + card.value * 200 + cardsDesc[i-1].value * 200 + cardsDesc.FirstOrDefault(x => x != firstPair[0] && x != firstPair[1] && x != card && x != cardsDesc[i-1]).value); 
+                    }
+                    break;
+                }
+
+                if (card.value == cardsDesc[i + 1].value && firstPair.All(x => x != card))
+                {
+                    chain++;
+                }
+                else
+                {
+                    if (chain == 1)
+                    {
+                        return new Tuple<HandType, int>(HandType.TwoPairs, firstPair[0].value * 20000 + firstPair[1].value * 20000 + card.value * 200 + cardsDesc[i-1].value * 200 + cardsDesc.FirstOrDefault(x => x != firstPair[0] && x != firstPair[1] && x != card && x != cardsDesc[i-1]).value);
+                    }
+                    
+                    chain = 0;
+                }
+            }
             
             // Pair
             chain = 0;
