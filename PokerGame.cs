@@ -60,7 +60,7 @@ namespace PokeriPeli
 
                 foreach (var player in testTable.players)
                 {
-                    if (player.handType == HandType.ThreeOfAKind)
+                    if (player.handType == HandType.Pair)
                     {
                         boolean = true;
                     }
@@ -426,7 +426,7 @@ namespace PokeriPeli
                 {
                     if (chain == 1)
                     {
-                        return new Tuple<HandType, int>(HandType.Pair, card.value * 2000 + cards[cards.Count-2].value + cards[cards.Count-3].value + cards[cards.Count-4].value);
+                        return new Tuple<HandType, int>(HandType.Pair, card.value * 2000 + cards[cards.Count-2].value * 100 + cards[cards.Count-3].value * 10 + cards[cards.Count-4].value);
                     }
                     break;
                 }
@@ -441,9 +441,9 @@ namespace PokeriPeli
                     {
                         if (card.value == 1)
                         {
-                            return new Tuple<HandType, int>(HandType.Pair, card.value * 20000 + cards[cards.Count-1].value + cards.OrderByDescending(x => x.value).ToList().FirstOrDefault(x => x.value != card.value && x != cards[cards.Count-1]).value);
+                            return new Tuple<HandType, int>(HandType.Pair, card.value * 20000 + cards[cards.Count-1].value * 100 + cards.OrderByDescending(x => x.value).ToList().FirstOrDefault(x => x.value != card.value && x != cards[cards.Count-1]).value * 10 + cards.OrderByDescending(x => x.value).ToList().FirstOrDefault(x => x.value != card.value && x != cards[cards.Count-1] && x != cards.OrderByDescending(x => x.value).ToList().FirstOrDefault(x => x.value != card.value && x != cards[cards.Count-1])).value);
                         }
-                        return new Tuple<HandType, int>(HandType.Pair, card.value * 2000 + cards[cards.Count-1].value + cards.OrderByDescending(x => x.value).ToList().FirstOrDefault(x => x.value != card.value && x != cards[cards.Count-1]).value);
+                        return new Tuple<HandType, int>(HandType.Pair, card.value * 2000 + cards[cards.Count-1].value * 100 + cards.OrderByDescending(x => x.value).ToList().FirstOrDefault(x => x.value != card.value && x != cards[cards.Count-1]).value * 10 + cards.OrderByDescending(x => x.value).ToList().FirstOrDefault(x => x.value != card.value && x != cards[cards.Count-1] && x != cards.OrderByDescending(x => x.value).ToList().FirstOrDefault(x => x.value != card.value && x != cards[cards.Count-1])).value);
                     }
                     chain = 0;
                 }
