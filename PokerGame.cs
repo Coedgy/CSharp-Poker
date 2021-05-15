@@ -21,7 +21,15 @@ namespace PokeriPeli
 
         static void CreateTestTable()
         {
-            bool boolean = true; 
+            //bool boolean = false; 
+            int count = 0;
+
+            int straightFlushCount = 0;
+            int fourOfAKindCount = 0;
+            int fullHouseCount = 0;
+            int flushCount = 0;
+            int straightCount = 0;
+
             do
             {
                 PokerTable testTable = new PokerTable();
@@ -40,7 +48,7 @@ namespace PokeriPeli
 
                 testTable.ShuffleDeck();
             
-                System.Console.WriteLine(" - ");
+                //System.Console.WriteLine(" - ");
                 testTable.DealCards();
 
                 // testTable.board[0].value = 8;
@@ -53,29 +61,48 @@ namespace PokeriPeli
 
                 testTable.CalculateHands();
             
-                foreach (Player player in testTable.players)
-                {
-                    System.Console.WriteLine(player.name + ": " + player.handType);
-                    FormatCardList(player.handCards);
-                    System.Console.WriteLine("");
-                }
+                // foreach (Player player in testTable.players)
+                // {
+                //     System.Console.WriteLine(player.name + ": " + player.handType);
+                //     FormatCardList(player.handCards);
+                //     System.Console.WriteLine("");
+                // }
 
-                System.Console.WriteLine("Board: ");
-                FormatCardList(testTable.board);
-                System.Console.WriteLine("");
+                //System.Console.WriteLine("Board: ");
+                //FormatCardList(testTable.board);
+                //System.Console.WriteLine("");
             
-                testTable.GetWinners();
+                //testTable.GetWinners();
 
                 foreach (var player in testTable.players)
                 {
-                    if (player.handType == HandType.Flush)
+                    if (player.handType == HandType.FullHouse)
                     {
-                        boolean = true;
+                        fullHouseCount++;
+                    }else if (player.handType == HandType.StraightFlush)
+                    {
+                        straightFlushCount++;
+                    }else if (player.handType == HandType.FourOfAKind)
+                    {
+                        fourOfAKindCount++;
+                    }else if (player.handType == HandType.Flush)
+                    {
+                        flushCount++;
+                    }else if (player.handType == HandType.Straight)
+                    {
+                        straightCount++;
                     }
                 }
 
                 testTable.ClearCards();
-            } while (boolean == false);
+                count++;
+            } while (count != 10000);
+
+            Console.WriteLine("Straight flush count: " + straightFlushCount);
+            Console.WriteLine("Four of a kind count:: " + fourOfAKindCount);
+            Console.WriteLine("Full house count: " + fullHouseCount);
+            Console.WriteLine("Flush count: " + flushCount);
+            Console.WriteLine("Straight count: " + straightCount);
         }
 
         public static void FormatCardList(List<Card> list)
@@ -261,7 +288,7 @@ namespace PokeriPeli
                 if (player.handType == biggestType && player.handValue == biggestValue)
                 {
                     winners.Add(player);
-                    Console.WriteLine(player.name);
+                    Console.WriteLine("Winner: " + player.name);
                 }
             }
         }
@@ -298,7 +325,6 @@ namespace PokeriPeli
                 if (card.value + 1 == cards[i + 1].value && card.color == cards[i+1].color)
                 {
                     chain++;
-                    //Console.WriteLine(card.value + " " + card.color + " " + cards[i + 1].value +  " " + cards[i+1].color);
                 }
                 else if (card.value == cards[i + 1].value)
                 {
@@ -348,8 +374,75 @@ namespace PokeriPeli
             }
             
             //Full house
-            //TODO: Count three of a kind, then find pair from list that excludes the found three-of-a-kind
-            
+            List<Card> threeOfAKind = new List<Card>();
+            chain = 0;
+            //Find three of a kind
+            for (int i = 0; i < cardsDesc.Count; i++)
+            {
+                Card card = cardsDesc[i];
+
+                if (i == cardsDesc.Count - 1)
+                {
+                    if (chain == 2)
+                    {
+                        threeOfAKind.Add(card);
+                        threeOfAKind.Add(cardsDesc[i - 1]);
+                        threeOfAKind.Add(cardsDesc[i - 2]);
+                    }
+                    break;
+                }
+
+                if (card.value == cardsDesc[i + 1].value)
+                {
+                    chain++;
+                }
+                else
+                {
+                    if (chain == 2)
+                    {
+                        threeOfAKind.Add(card);
+                        threeOfAKind.Add(cardsDesc[i - 1]);
+                        threeOfAKind.Add(cardsDesc[i - 2]);
+                        break;
+                    }
+                    
+                    chain = 0;
+                }
+            }
+
+            //Find a pair
+            chain = 0;
+            if (threeOfAKind.Count == 3)
+            {
+                for (int i = 0; i < cardsDesc.Count; i++)
+                {
+                    Card card = cardsDesc[i];
+
+                    if (i == cardsDesc.Count - 1)
+                    {
+                        if (chain == 1)
+                        {
+                            return new Tuple<HandType, int>(HandType.FullHouse, threeOfAKind[0].value * 30000 + threeOfAKind[1].value * 30000 + threeOfAKind[2].value * 30000 + card.value * 200 + cardsDesc[i-1].value * 200); 
+                        }
+                        break;
+                    }
+
+                    if (card.value == cardsDesc[i + 1].value && threeOfAKind.All(x => x != card))
+                    {
+                        chain++;
+                    }
+                    else
+                    {
+                        if (chain == 1)
+                        {
+                            return new Tuple<HandType, int>(HandType.FullHouse, threeOfAKind[0].value * 30000 + threeOfAKind[1].value * 30000 + threeOfAKind[2].value * 30000 + card.value * 200 + cardsDesc[i-1].value * 200);
+                        }
+                    
+                        chain = 0;
+                    }
+                }
+            }
+
             //Flush
             List<Card> cardsByColor = cards.OrderBy(x => x.color).ToList();
             chain = 0;
@@ -449,7 +542,6 @@ namespace PokeriPeli
                 {
                     if (chain == 2)
                     {
-                        Console.WriteLine(card.value * 3000 + cards[cards.Count-4].value + cards[cards.Count-5].value);
                         return new Tuple<HandType, int>(HandType.ThreeOfAKind, card.value * 3000 + cards[cards.Count-3].value + cards[cards.Count-4].value);
                     }
                     break;
