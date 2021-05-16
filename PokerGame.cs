@@ -7,6 +7,8 @@ namespace PokeriPeli
 {
     class Program
     {
+        public static StatMode statMode = StatMode.AllWinners;
+        
         public static int straightFlushCount = 0;
         public static int fourOfAKindCount = 0;
         public static int fullHouseCount = 0;
@@ -48,7 +50,10 @@ namespace PokeriPeli
 
                 testTable.ShuffleDeck();
             
-                //System.Console.WriteLine(" - ");
+                if (statMode == StatMode.Disabled)
+                { 
+                    System.Console.WriteLine(" - ");
+                }
                 testTable.DealCards();
 
                 // testTable.board[0].value = 8;
@@ -60,19 +65,66 @@ namespace PokeriPeli
                 // testTable.players[0].handCards[1].value = 7;
 
                 testTable.CalculateHands();
-            
-                // foreach (Player player in testTable.players)
-                // {
-                //     System.Console.WriteLine(player.name + ": " + player.handType);
-                //     FormatCardList(player.handCards);
-                //     System.Console.WriteLine("");
-                // }
-
-                //System.Console.WriteLine("Board: ");
-                //FormatCardList(testTable.board);
-                //System.Console.WriteLine("");
-            
-                testTable.GetWinners();
+                
+                if (statMode == StatMode.Disabled)
+                { 
+                    foreach (Player player in testTable.players)
+                    {
+                        System.Console.WriteLine(player.name + ": " + player.handType);
+                        FormatCardList(player.handCards);
+                        System.Console.WriteLine("");
+                    }
+                     
+                    System.Console.WriteLine("Board: "); 
+                    FormatCardList(testTable.board); 
+                    System.Console.WriteLine("");
+                }
+                else if (statMode == StatMode.AllWinners)
+                {
+                    testTable.GetWinners();
+                }
+                else if (statMode == StatMode.Player1)
+                {
+                    Player targetPlayer = testTable.players[0];
+                    if (targetPlayer.handType == HandType.FullHouse)
+                    {
+                        Program.fullHouseCount++;
+                    }else if (targetPlayer.handType == HandType.StraightFlush)
+                    {
+                        Program.straightFlushCount++;
+                    }else if (targetPlayer.handType == HandType.FourOfAKind)
+                    {
+                        Program.fourOfAKindCount++;
+                    }else if (targetPlayer.handType == HandType.Flush)
+                    {
+                        Program.flushCount++;
+                    }else if (targetPlayer.handType == HandType.Straight)
+                    {
+                        Program.straightCount++;
+                    }
+                }
+                else if (statMode == StatMode.AllPlayers)
+                {
+                    foreach (var player in testTable.players)
+                    {
+                        if (player.handType == HandType.FullHouse)
+                        {
+                            Program.fullHouseCount++;
+                        }else if (player.handType == HandType.StraightFlush)
+                        {
+                            Program.straightFlushCount++;
+                        }else if (player.handType == HandType.FourOfAKind)
+                        {
+                            Program.fourOfAKindCount++;
+                        }else if (player.handType == HandType.Flush)
+                        {
+                            Program.flushCount++;
+                        }else if (player.handType == HandType.Straight)
+                        {
+                            Program.straightCount++;
+                        }
+                    }
+                }
 
                 testTable.ClearCards();
                 count++;
@@ -268,22 +320,27 @@ namespace PokeriPeli
                 if (player.handType == biggestType && player.handValue == biggestValue)
                 {
                     winners.Add(player);
-                    //Console.WriteLine("Winner: " + player.name);
-                    if (player.handType == HandType.FullHouse)
+                    if (Program.statMode == StatMode.Disabled)
                     {
-                        Program.fullHouseCount++;
-                    }else if (player.handType == HandType.StraightFlush)
+                        Console.WriteLine("Winner: " + player.name);
+                    }else if (Program.statMode == StatMode.AllWinners)
                     {
-                        Program.straightFlushCount++;
-                    }else if (player.handType == HandType.FourOfAKind)
-                    {
-                        Program.fourOfAKindCount++;
-                    }else if (player.handType == HandType.Flush)
-                    {
-                        Program.flushCount++;
-                    }else if (player.handType == HandType.Straight)
-                    {
-                        Program.straightCount++;
+                        if (player.handType == HandType.FullHouse)
+                        {
+                            Program.fullHouseCount++;
+                        }else if (player.handType == HandType.StraightFlush)
+                        {
+                            Program.straightFlushCount++;
+                        }else if (player.handType == HandType.FourOfAKind)
+                        {
+                            Program.fourOfAKindCount++;
+                        }else if (player.handType == HandType.Flush)
+                        {
+                            Program.flushCount++;
+                        }else if (player.handType == HandType.Straight)
+                        {
+                            Program.straightCount++;
+                        }
                     }
                 }
             }
@@ -737,5 +794,13 @@ namespace PokeriPeli
         FullHouse,
         FourOfAKind,
         StraightFlush
+    }
+
+    public enum StatMode
+    {
+        Disabled,
+        Player1,
+        AllWinners,
+        AllPlayers
     }
 }
