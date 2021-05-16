@@ -7,6 +7,12 @@ namespace PokeriPeli
 {
     class Program
     {
+        public static int straightFlushCount = 0;
+        public static int fourOfAKindCount = 0;
+        public static int fullHouseCount = 0;
+        public static int flushCount = 0;
+        public static int straightCount = 0;
+        
         public static List<PokerTable> tableList;
 
         static void Main(string[] args)
@@ -23,12 +29,6 @@ namespace PokeriPeli
         {
             //bool boolean = false; 
             int count = 0;
-
-            int straightFlushCount = 0;
-            int fourOfAKindCount = 0;
-            int fullHouseCount = 0;
-            int flushCount = 0;
-            int straightCount = 0;
 
             do
             {
@@ -72,34 +72,14 @@ namespace PokeriPeli
                 //FormatCardList(testTable.board);
                 //System.Console.WriteLine("");
             
-                //testTable.GetWinners();
-
-                foreach (var player in testTable.players)
-                {
-                    if (player.handType == HandType.FullHouse)
-                    {
-                        fullHouseCount++;
-                    }else if (player.handType == HandType.StraightFlush)
-                    {
-                        straightFlushCount++;
-                    }else if (player.handType == HandType.FourOfAKind)
-                    {
-                        fourOfAKindCount++;
-                    }else if (player.handType == HandType.Flush)
-                    {
-                        flushCount++;
-                    }else if (player.handType == HandType.Straight)
-                    {
-                        straightCount++;
-                    }
-                }
+                testTable.GetWinners();
 
                 testTable.ClearCards();
                 count++;
             } while (count != 10000);
 
             Console.WriteLine("Straight flush count: " + straightFlushCount);
-            Console.WriteLine("Four of a kind count:: " + fourOfAKindCount);
+            Console.WriteLine("Four of a kind count: " + fourOfAKindCount);
             Console.WriteLine("Full house count: " + fullHouseCount);
             Console.WriteLine("Flush count: " + flushCount);
             Console.WriteLine("Straight count: " + straightCount);
@@ -288,7 +268,23 @@ namespace PokeriPeli
                 if (player.handType == biggestType && player.handValue == biggestValue)
                 {
                     winners.Add(player);
-                    Console.WriteLine("Winner: " + player.name);
+                    //Console.WriteLine("Winner: " + player.name);
+                    if (player.handType == HandType.FullHouse)
+                    {
+                        Program.fullHouseCount++;
+                    }else if (player.handType == HandType.StraightFlush)
+                    {
+                        Program.straightFlushCount++;
+                    }else if (player.handType == HandType.FourOfAKind)
+                    {
+                        Program.fourOfAKindCount++;
+                    }else if (player.handType == HandType.Flush)
+                    {
+                        Program.flushCount++;
+                    }else if (player.handType == HandType.Straight)
+                    {
+                        Program.straightCount++;
+                    }
                 }
             }
         }
