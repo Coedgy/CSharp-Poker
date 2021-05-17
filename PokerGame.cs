@@ -44,7 +44,7 @@ namespace PokeriPeli
                 testTable.bigBlind = 10.00M;
                 testTable.InitializeTable();
 
-                for (int i = 0; i < 10; i++)
+                for (int i = 0; i < 5; i++)
                 {
                     Player player = new Player();
                     player.name = "Player " + (i + 1);
@@ -83,11 +83,9 @@ namespace PokeriPeli
                     FormatCardList(testTable.board); 
                     System.Console.WriteLine("");
                 }
-                else if (statMode == StatMode.AllWinners)
-                {
-                    testTable.GetWinners();
-                }
-                else if (statMode == StatMode.Player1)
+
+                testTable.GetWinners();
+                if (statMode == StatMode.Player1)
                 {
                     Player targetPlayer = testTable.players[0];
                     if (targetPlayer.handType == HandType.FullHouse)
