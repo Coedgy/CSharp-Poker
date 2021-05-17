@@ -7,7 +7,7 @@ namespace PokeriPeli
 {
     class Program
     {
-        public static StatMode statMode = StatMode.AllWinners;
+        public static StatMode statMode = StatMode.Disabled;
         
         public static int straightFlushCount = 0;
         public static int fourOfAKindCount = 0;
@@ -31,6 +31,10 @@ namespace PokeriPeli
         {
             //bool boolean = false; 
             int count = 0;
+            if (statMode == StatMode.Disabled)
+            {
+                count = 9999;
+            }
 
             do
             {
@@ -130,11 +134,14 @@ namespace PokeriPeli
                 count++;
             } while (count != 10000);
 
-            Console.WriteLine("Straight flush count: " + straightFlushCount);
-            Console.WriteLine("Four of a kind count: " + fourOfAKindCount);
-            Console.WriteLine("Full house count: " + fullHouseCount);
-            Console.WriteLine("Flush count: " + flushCount);
-            Console.WriteLine("Straight count: " + straightCount);
+            if (statMode != StatMode.Disabled)
+            {
+                Console.WriteLine("Straight flush count: " + straightFlushCount);
+                Console.WriteLine("Four of a kind count: " + fourOfAKindCount);
+                Console.WriteLine("Full house count: " + fullHouseCount);
+                Console.WriteLine("Flush count: " + flushCount);
+                Console.WriteLine("Straight count: " + straightCount);
+            }
         }
 
         public static void FormatCardList(List<Card> list)
