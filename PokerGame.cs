@@ -673,7 +673,7 @@ namespace PokeriPeli
                     break;
                 }
 
-                if (card.value == cardsDesc[i + 1].value && firstPair.All(x => x != card))
+                if (card.value == cardsDesc[i + 1].value && firstPair.All(x => x != card) && card.value != 1 && cardsDesc[i + 1].value != 1)
                 {
                     chain++;
                 }
