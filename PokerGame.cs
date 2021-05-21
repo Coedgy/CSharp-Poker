@@ -24,10 +24,39 @@ namespace PokeriPeli
 
             tableList = new List<PokerTable>();
             Cards.InitializeList();
-            CreateTestTable();
+            CIControl();
         }
 
-        static void CreateTestTable()
+        static void CIControl()
+        {
+            int playerCount;
+            
+            Console.WriteLine("Statistic-mode:");
+            Console.WriteLine("0 - Disabled");
+            Console.WriteLine("1 - Player 1");
+            Console.WriteLine("3 - All winners");
+            Console.WriteLine("4 - All players");
+            statMode = (StatMode)Int32.Parse(Console.ReadLine());
+            Console.Clear();
+            Console.WriteLine("Player count: ");
+            playerCount = Int32.Parse(Console.ReadLine());
+
+            bool run = true;
+            while (run)
+            {
+                CreateTestTable(playerCount);
+
+                Console.WriteLine("Play a new game? (Yy/Nn)");
+                string input = Console.ReadLine();
+                if (input == "N" || input == "n")
+                {
+                    run = false;
+                }
+                Console.Clear();
+            }
+        }
+
+        static void CreateTestTable(int playerCount)
         {
             //bool boolean = false; 
             int count = 0;
@@ -44,7 +73,7 @@ namespace PokeriPeli
                 testTable.bigBlind = 10.00M;
                 testTable.InitializeTable();
 
-                for (int i = 0; i < 5; i++)
+                for (int i = 0; i < playerCount; i++)
                 {
                     Player player = new Player();
                     player.name = "Player " + (i + 1);
