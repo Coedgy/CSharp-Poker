@@ -107,6 +107,8 @@ namespace PokeriPeli
 
             testTable.players[0].isAI = false;
 
+            testTable.players[2].stack = 50;
+            
             // Table is created, start the game-loop
             bool run = true;
 
@@ -115,10 +117,18 @@ namespace PokeriPeli
             
             do
             {
+                List<Player> toRemove = new List<Player>();
                 foreach (var player in testTable.players)
                 {
                     player.folded = false;
+
+                    if (player.stack < testTable.bigBlind)
+                    {
+                        toRemove.Add(player);
+                    }
                 }
+                toRemove.ForEach(x => testTable.RemovePlayer(x));
+                
                 testTable.pot = 0;
                 testTable.bet = 0;
                 testTable.MoveButtons();
@@ -266,7 +276,7 @@ namespace PokeriPeli
                             }
                             else if (playerAction == Action.Raise)
                             {
-                                lastPlayer = currentPlayer;
+                                lastPlayer = testTable.GetPreviousPlayer(currentPlayer);
                                 Console.WriteLine("Set total bet amount to:");
                                 decimal betInput = Decimal.Parse(Console.ReadLine());
                                 if (betInput <= testTable.bet)
@@ -602,6 +612,31 @@ namespace PokeriPeli
             }
 
             return seats[nextPlayerSeatID].player;
+        }
+
+        public Player GetPreviousPlayer(Player player)
+        {
+            int prevPlayerSeatID = seats.FindIndex(x => x == GetPlayerSeat(player)) - 1;
+
+            bool seatFound = false;
+            while (!seatFound)
+            {
+                if (prevPlayerSeatID < 0)
+                {
+                    prevPlayerSeatID = seats.Count - 1;
+                }
+
+                if (!seats[prevPlayerSeatID].isEmpty())
+                {
+                    seatFound = true;
+                }
+                else
+                {
+                    prevPlayerSeatID--;
+                }
+            }
+
+            return seats[prevPlayerSeatID].player;
         }
         
         public void MoveButtons()
