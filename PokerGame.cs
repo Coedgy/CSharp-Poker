@@ -79,11 +79,68 @@ namespace PokeriPeli
             else
             {
                 Console.WriteLine("This is not implemented yet..");
+                Environment.Exit(0);
+
+                bool run = true;
+                while (run)
+                {
+                    PlayTestGame(playerCount);
+
+                    Console.WriteLine("Play a new game? (Yy/Nn)");
+                    string input = Console.ReadLine();
+                    if (input == "N" || input == "n")
+                    {
+                        run = false;
+                    }
+                    Console.Clear();
+                }
             }
 
             Console.WriteLine("Exiting...");
         }
 
+        static void PlayTestGame(int playerCount)
+        { 
+            PokerTable testTable = new PokerTable();
+            testTable.tableID = 1;
+            testTable.smallBlind = 5.00M;
+            testTable.bigBlind = 10.00M;
+            testTable.InitializeTable();
+
+            for (int i = 0; i < playerCount; i++)
+            {
+                Player player = new Player();
+                player.name = "Player " + (i + 1);
+                player.ID = i + 1;
+                testTable.AddPlayer(player);
+            }
+
+            testTable.ShuffleDeck();
+            
+            System.Console.WriteLine(" - ");
+            
+            testTable.DealCards();
+            
+
+            testTable.CalculateHands();
+            
+            foreach (Player player in testTable.players)
+            {
+                System.Console.WriteLine(player.name + ": " + player.handType);
+                FormatCardList(player.handCards);
+                System.Console.WriteLine("");
+            }
+             
+            System.Console.WriteLine("Board: "); 
+            FormatCardList(testTable.board); 
+            System.Console.WriteLine("");
+            
+            
+            testTable.GetWinners();
+
+            testTable.ClearCards();
+        }
+        
         static void CreateTestTable(int playerCount)
         {
             //bool boolean = false; 
