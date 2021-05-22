@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mime;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace PokeriPeli
@@ -30,30 +32,56 @@ namespace PokeriPeli
         static void CIControl()
         {
             int playerCount;
-            
-            Console.WriteLine("Statistic-mode:");
-            Console.WriteLine("0 - Disabled");
-            Console.WriteLine("1 - Player 1");
+
+            Console.WriteLine("Gameplay modes:");
+            Console.WriteLine("0 - Play-mode");
+            Console.WriteLine("1 - Instant game");
+            Console.WriteLine("Statistic-modes: (if enabled, 10k games will be played and the player's hands will be logged)");
+            Console.WriteLine("2 - Player 1");
             Console.WriteLine("3 - All winners");
             Console.WriteLine("4 - All players");
-            statMode = (StatMode)Int32.Parse(Console.ReadLine());
+
+            var answer = Console.ReadLine();
+            int x = 0;
+            if (!Int32.TryParse(answer, out x))
+            {
+                throw new Exception("Invalid input");
+            }
+            statMode = (StatMode)x;
+            
             Console.Clear();
             Console.WriteLine("Player count: ");
-            playerCount = Int32.Parse(Console.ReadLine());
-
-            bool run = true;
-            while (run)
+            
+            answer = Console.ReadLine();
+            x = 0;
+            if (!Int32.TryParse(answer, out x))
             {
-                CreateTestTable(playerCount);
-
-                Console.WriteLine("Play a new game? (Yy/Nn)");
-                string input = Console.ReadLine();
-                if (input == "N" || input == "n")
-                {
-                    run = false;
-                }
-                Console.Clear();
+                throw new Exception("Invalid input");
             }
+            playerCount = x;
+
+            if (statMode != 0)
+            {
+                bool run = true;
+                while (run)
+                {
+                    CreateTestTable(playerCount);
+
+                    Console.WriteLine("Play a new game? (Yy/Nn)");
+                    string input = Console.ReadLine();
+                    if (input == "N" || input == "n")
+                    {
+                        run = false;
+                    }
+                    Console.Clear();
+                }
+            }
+            else
+            {
+                Console.WriteLine("This is not implemented yet..");
+            }
+
+            Console.WriteLine("Exiting...");
         }
 
         static void CreateTestTable(int playerCount)
@@ -832,6 +860,7 @@ namespace PokeriPeli
 
     public enum StatMode
     {
+        PlayMode,
         Disabled,
         Player1,
         AllWinners,
