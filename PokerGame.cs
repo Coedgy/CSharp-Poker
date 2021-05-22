@@ -101,47 +101,153 @@ namespace PokeriPeli
                 Player player = new Player();
                 player.name = "Player " + (i + 1);
                 player.ID = i + 1;
+                player.isAI = true;
                 testTable.AddPlayer(player);
             }
 
+            testTable.players[0].isAI = false;
+
             // Table is created, start the game-loop
             bool run = true;
+
+            Seat playerSeat = testTable.seats[0];
+            Player _player = testTable.players[0];
             
             do
             {
+                testTable.MoveButtons();
                 testTable.tableStage = TableStage.preflop;
                 testTable.ShuffleDeck();
 
-                Console.WriteLine("Your balance: " + testTable.players[0].balance);
-            
-                System.Console.WriteLine(" - ");
-            
-                testTable.DealCards();
+                if (testTable.smallBlindSeat == playerSeat)
+                {
+                    if (!_player.AddBet(testTable.smallBlind))
+                    {
+                        Console.WriteLine("Out of money..");
+                        Environment.Exit(0);
+                    }
+                }
+                else if (testTable.bigBlindSeat == playerSeat)
+                {
+                    if (!_player.AddBet(testTable.bigBlind))
+                    {
+                        Console.WriteLine("Out of money..");
+                        Environment.Exit(0);
+                    }
+                }
 
-                testTable.CalculateHands();
+                bool roundFinished = false;
 
-                System.Console.WriteLine("Your hand: " + testTable.players[0].handType);
-                FormatCardList(testTable.players[0].handCards);
-                System.Console.WriteLine("");
+                do
+                {
+                    if (testTable.tableStage == TableStage.river)
+                    {
+                        roundFinished = true;
+                    }
+                    
+                    Console.Clear();
+
+                    foreach (var player in testTable.players)
+                    {
+                        if (testTable.GetPlayerSeat(player) == testTable.dealerSeat)
+                        {
+                            Console.WriteLine(player.name + " (Dealer)");
+                        }
+                        else if (testTable.GetPlayerSeat(player) == testTable.smallBlindSeat)
+                        {
+                            Console.WriteLine(player.name + " (Small blind)");
+                        }
+                        else if (testTable.GetPlayerSeat(player) == testTable.bigBlindSeat)
+                        {
+                            Console.WriteLine(player.name + " (Big blind)");
+                        }
+                        else
+                        {
+                            Console.WriteLine(player.name);
+                        }
+                    }
+
+                    Console.WriteLine("");
+                    
+                    Console.WriteLine("Your balance: " + _player.balance);
+                    Console.WriteLine("Your stack: " + _player.stack);
                 
-                System.Console.WriteLine("Board: "); 
-                FormatCardList(testTable.board); 
-                System.Console.WriteLine("");
+                    System.Console.WriteLine(" - ");
+                    
+                    if (testTable.smallBlindSeat == playerSeat)
+                    {
+                        Console.WriteLine("SMALL BLIND");
+                    }
+                    else if (testTable.bigBlindSeat == playerSeat)
+                    {
+                        Console.WriteLine("BIG BLIND");
+                    }
+                    
+                    testTable.DealCards();
+
+                    if (testTable.tableStage == TableStage.flop)
+                    {
+                        System.Console.WriteLine("Your hand: ");
+                    }
+                    else
+                    {
+                        testTable.CalculateHands();
+                        System.Console.WriteLine("Your hand: " + testTable.players[0].handType);
+                    }
+                    
+                    FormatCardList(testTable.players[0].handCards);
+                    System.Console.WriteLine("");
+                
+                    System.Console.WriteLine("Board: "); 
+                    FormatCardList(testTable.board); 
+                    System.Console.WriteLine("");
+
+                    bool turnFinished = false;
+                    Player lastPlayer = testTable.bigBlindSeat.player;
+                    Player currentPlayer = testTable.GetNextPlayer(lastPlayer);
+
+                    do
+                    {
+                        if (currentPlayer == lastPlayer)
+                        {
+                            turnFinished = true;
+                        }
+
+                        if (currentPlayer == _player)
+                        {
+                            Console.WriteLine("Current pot: " + testTable.pot);
+                            Console.WriteLine("Current bet: " + testTable.bet);
+                            Console.WriteLine("Your in: " + _player.bet);
+                            System.Console.WriteLine("");
+                        }
+
+                        Action playerAction = currentPlayer.ActionPrompt(testTable.bet);
+
+                        if (playerAction == Action.Raise)
+                        {
+                            lastPlayer = currentPlayer;
+                        }
+
+                        currentPlayer = testTable.GetNextPlayer(currentPlayer);
+                    } while (!turnFinished);
+                } while (!roundFinished);
 
                 testTable.GetWinners();
-
-                testTable.ClearCards();
                 
+                System.Console.WriteLine("");
+
                 foreach (Player player in testTable.players)
                 {
                     if (player == testTable.players[0])
                     {
-                        break;
+                        continue;
                     }
                     System.Console.WriteLine(player.name + ": " + player.handType);
                     FormatCardList(player.handCards);
                     System.Console.WriteLine("");
                 }
+                
+                testTable.ClearCards();
                 
                 Console.WriteLine("Keep playing? (Yy/Nn)");
                 string input = Console.ReadLine();
@@ -322,14 +428,18 @@ namespace PokeriPeli
         public int tableID;
         public List<Card> deck = new List<Card>();
         public List<Player> players = new List<Player>();
-        public decimal pot;
-        public decimal bet;
+        public decimal pot = 0.0M;
+        public decimal bet = 0.0M;
         public decimal smallBlind;
         public decimal bigBlind;
         public List<Seat> seats = new List<Seat>();
         public int maxPlayers = 10;
         public List<Card> board = new List<Card>();
         public TableStage tableStage = TableStage.preflop;
+
+        public Seat dealerSeat;
+        public Seat smallBlindSeat;
+        public Seat bigBlindSeat;
 
         Random r = new Random();
 
@@ -340,6 +450,10 @@ namespace PokeriPeli
                 seats.Add(new Seat());
             }
             NewDeck();
+
+            dealerSeat = seats[0];
+            smallBlindSeat = seats[1];
+            bigBlindSeat = seats[2];
         }
 
         public void NewDeck()
@@ -376,6 +490,126 @@ namespace PokeriPeli
             }
         }
 
+        public Seat GetPlayerSeat(Player player)
+        {
+            foreach (var seat in seats)
+            {
+                if (seat.player == player)
+                {
+                    return seat;
+                }
+            }
+
+            return null;
+        }
+        
+        public Player GetNextPlayer(Player player)
+        {
+            int nextPlayerSeatID = seats.FindIndex(x => x == GetPlayerSeat(player)) + 1;
+
+            bool seatFound = false;
+            while (!seatFound)
+            {
+                if (nextPlayerSeatID > seats.Count - 1)
+                {
+                    nextPlayerSeatID = 0;
+                }
+
+                if (!seats[nextPlayerSeatID].isEmpty())
+                {
+                    seatFound = true;
+                }
+                else
+                {
+                    nextPlayerSeatID++;
+                }
+            }
+
+            return seats[nextPlayerSeatID].player;
+        }
+        
+        public void MoveButtons()
+        {
+            MoveDealerButton();
+            MoveSmallBlind();
+            MoveBigBlind();
+        }
+        
+        public void MoveDealerButton()
+        {
+            int newDealerSeatID = seats.FindIndex(x => x == dealerSeat) + 1;
+
+            bool seatFound = false;
+            while (!seatFound)
+            {
+                if (newDealerSeatID > seats.Count - 1)
+                {
+                    newDealerSeatID = 0;
+                }
+
+                if (!seats[newDealerSeatID].isEmpty())
+                {
+                    seatFound = true;
+                }
+                else
+                {
+                    newDealerSeatID++;
+                }
+            }
+            
+            dealerSeat = seats[newDealerSeatID];
+        }
+        
+        public void MoveSmallBlind()
+        {
+            int newDealerSeatID = seats.FindIndex(x => x == smallBlindSeat) + 1;
+
+            bool seatFound = false;
+            while (!seatFound)
+            {
+                if (newDealerSeatID > seats.Count - 1)
+                {
+                    newDealerSeatID = 0;
+                }
+
+                if (!seats[newDealerSeatID].isEmpty() && seats[newDealerSeatID] != dealerSeat)
+                {
+                    seatFound = true;
+                }
+                else
+                {
+                    newDealerSeatID++;
+                }
+            }
+            
+            smallBlindSeat = seats[newDealerSeatID];
+        }
+        
+        public void MoveBigBlind()
+        {
+            int newDealerSeatID = seats.FindIndex(x => x == bigBlindSeat) + 1;
+
+            bool seatFound = false;
+            while (!seatFound)
+            {
+                if (newDealerSeatID > seats.Count - 1)
+                {
+                    newDealerSeatID = 0;
+                }
+
+                if (!seats[newDealerSeatID].isEmpty() && seats[newDealerSeatID] != dealerSeat && seats[newDealerSeatID] != smallBlindSeat)
+                {
+                    seatFound = true;
+                }
+                else
+                {
+                    newDealerSeatID++;
+                }
+            }
+            
+            bigBlindSeat = seats[newDealerSeatID];
+        }
+        
         public void DealAllCards()
         {
             for (int i = 0; i < 2; i++)
@@ -493,7 +727,7 @@ namespace PokeriPeli
                 if (player.handType == biggestType && player.handValue == biggestValue)
                 {
                     winners.Add(player);
-                    if (Program.statMode == StatMode.Disabled)
+                    if (Program.statMode == StatMode.Disabled || Program.statMode == StatMode.PlayMode)
                     {
                         Console.WriteLine("Winner: " + player.name);
                     }else if (Program.statMode == StatMode.AllWinners)
@@ -532,7 +766,7 @@ namespace PokeriPeli
 
             cards = cards.OrderBy(x => x.value).ToList();
             cardsDesc = cards.OrderByDescending(x => x.value).ToList();
-            
+
             // Straight flush
             int chain = 0;
             for (int i = 0; i < cards.Count; i++)
