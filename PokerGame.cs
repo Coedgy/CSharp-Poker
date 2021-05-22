@@ -115,24 +115,40 @@ namespace PokeriPeli
             
             do
             {
+                testTable.pot = 0;
+                testTable.bet = 0;
                 testTable.MoveButtons();
                 testTable.tableStage = TableStage.preflop;
                 testTable.ShuffleDeck();
 
-                if (testTable.smallBlindSeat == playerSeat)
+                foreach (var player in testTable.players)
                 {
-                    if (!_player.AddBet(testTable.smallBlind))
+                    Seat pSeat = testTable.GetPlayerSeat(player);
+                    if (testTable.smallBlindSeat == pSeat)
                     {
-                        Console.WriteLine("Out of money..");
-                        Environment.Exit(0);
+                        if (!player.AddBet(testTable.smallBlind))
+                        {
+                            if (player == _player)
+                            {
+                                Console.WriteLine("Out of money..");
+                                Environment.Exit(0);
+                            }
+                            testTable.RemovePlayer(player);
+                        }
                     }
-                }
-                else if (testTable.bigBlindSeat == playerSeat)
-                {
-                    if (!_player.AddBet(testTable.bigBlind))
+                    else if (testTable.bigBlindSeat == pSeat)
                     {
-                        Console.WriteLine("Out of money..");
-                        Environment.Exit(0);
+                        if (!player.AddBet(testTable.bigBlind))
+                        {
+                            if (player == _player)
+                            {
+                                Console.WriteLine("Out of money..");
+                                Environment.Exit(0);
+                            }
+                            testTable.RemovePlayer(player);
+                        }
+
+                        testTable.bet = testTable.bigBlind;
                     }
                 }
 
@@ -147,28 +163,36 @@ namespace PokeriPeli
                     
                     Console.Clear();
 
-                    foreach (var player in testTable.players)
+                    foreach (var seat in testTable.seats)
                     {
-                        if (testTable.GetPlayerSeat(player) == testTable.dealerSeat)
+                        if (seat.isEmpty())
                         {
-                            Console.WriteLine(player.name + " (Dealer)");
-                        }
-                        else if (testTable.GetPlayerSeat(player) == testTable.smallBlindSeat)
-                        {
-                            Console.WriteLine(player.name + " (Small blind)");
-                        }
-                        else if (testTable.GetPlayerSeat(player) == testTable.bigBlindSeat)
-                        {
-                            Console.WriteLine(player.name + " (Big blind)");
+                            Console.WriteLine("Empty seat");
                         }
                         else
                         {
-                            Console.WriteLine(player.name);
+                            Player player = seat.player;
+                            if (testTable.GetPlayerSeat(player) == testTable.dealerSeat)
+                            {
+                                Console.WriteLine(player.name + " (Dealer)");
+                            }
+                            else if (testTable.GetPlayerSeat(player) == testTable.smallBlindSeat)
+                            {
+                                Console.WriteLine(player.name + " (Small blind)");
+                            }
+                            else if (testTable.GetPlayerSeat(player) == testTable.bigBlindSeat)
+                            {
+                                Console.WriteLine(player.name + " (Big blind)");
+                            }
+                            else
+                            {
+                                Console.WriteLine(player.name);
+                            }
                         }
                     }
 
                     Console.WriteLine("");
-                    
+
                     Console.WriteLine("Your balance: " + _player.balance);
                     Console.WriteLine("Your stack: " + _player.stack);
                 
@@ -223,13 +247,48 @@ namespace PokeriPeli
 
                         Action playerAction = currentPlayer.ActionPrompt(testTable.bet);
 
-                        if (playerAction == Action.Raise)
+                        if (playerAction == Action.Check)
+                        {
+                            if (!currentPlayer.AddBet(testTable.bet - currentPlayer.bet))
+                            {
+                                Console.WriteLine("Not enough money to call");
+                            }
+                        }
+                        else if (playerAction == Action.Raise)
                         {
                             lastPlayer = currentPlayer;
+                            Console.WriteLine("Set total bet amount to:");
+                            decimal betInput = Decimal.Parse(Console.ReadLine());
+                            if (betInput <= testTable.bet)
+                            {
+                                Console.WriteLine("Bet amount was smaller or equal to current bet amount, checking instead.");
+                                if (!currentPlayer.AddBet(currentPlayer.bet - testTable.bet))
+                                {
+                                    Console.WriteLine("Not enough money to call");
+                                }
+                            }
+                            else
+                            {
+                                currentPlayer.AddBet(betInput);
+                                testTable.bet = currentPlayer.bet;
+                            }
+                        }
+                        else if (playerAction == Action.Fold)
+                        {
+                            roundFinished = true;
                         }
 
                         currentPlayer = testTable.GetNextPlayer(currentPlayer);
                     } while (!turnFinished);
+                    
+                    foreach (var player in testTable.players)
+                    {
+                        testTable.pot += player.bet;
+                        player.ResetBet();
+                    }
+
+                    testTable.bet = 0;
+
                 } while (!roundFinished);
 
                 testTable.GetWinners();
@@ -490,6 +549,12 @@ namespace PokeriPeli
             }
         }
 
+        public void RemovePlayer(Player player)
+        {
+            GetPlayerSeat(player).player = null;
+            players.Remove(player);
+        }
+
         public Seat GetPlayerSeat(Player player)
         {
             foreach (var seat in seats)
@@ -727,10 +792,7 @@ namespace PokeriPeli
                 if (player.handType == biggestType && player.handValue == biggestValue)
                 {
                     winners.Add(player);
-                    if (Program.statMode == StatMode.Disabled || Program.statMode == StatMode.PlayMode)
-                    {
-                        Console.WriteLine("Winner: " + player.name);
-                    }else if (Program.statMode == StatMode.AllWinners)
+                    if (Program.statMode == StatMode.AllWinners)
                     {
                         if (player.handType == HandType.FullHouse)
                         {
@@ -750,6 +812,12 @@ namespace PokeriPeli
                         }
                     }
                 }
+            }
+
+            foreach (var player in winners)
+            {
+                player.WinMoney(pot/winners.Count);
+                Console.WriteLine(player.name + " won " + pot/winners.Count);
             }
         }
     }

@@ -34,7 +34,7 @@ namespace PokeriPeli
             }
             string input = Console.ReadLine();
 
-            if (input == "B" || input == "b")
+            if (input == "B" || input == "b" || input == "R" || input == "r")
             {
                 return Action.Raise;
             }
@@ -56,6 +56,16 @@ namespace PokeriPeli
             bet += amount;
             
             return true;
+        }
+
+        public void WinMoney(decimal amount)
+        {
+            stack += amount;
+        }
+
+        public void ResetBet()
+        {
+            bet = 0.0M;
         }
     }
 
