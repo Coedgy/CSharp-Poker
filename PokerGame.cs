@@ -115,6 +115,10 @@ namespace PokeriPeli
             
             do
             {
+                foreach (var player in testTable.players)
+                {
+                    player.folded = false;
+                }
                 testTable.pot = 0;
                 testTable.bet = 0;
                 testTable.MoveButtons();
@@ -172,6 +176,10 @@ namespace PokeriPeli
                         else
                         {
                             Player player = seat.player;
+                            if (player.folded)
+                            {
+                                Console.Write("FOLDED - ");
+                            }
                             if (testTable.GetPlayerSeat(player) == testTable.dealerSeat)
                             {
                                 Console.WriteLine(player.name + " (Dealer)");
@@ -245,37 +253,40 @@ namespace PokeriPeli
                             System.Console.WriteLine("");
                         }
 
-                        Action playerAction = currentPlayer.ActionPrompt(testTable.bet);
+                        if (!currentPlayer.folded)
+                        {
+                            Action playerAction = currentPlayer.ActionPrompt(testTable.bet);
 
-                        if (playerAction == Action.Check)
-                        {
-                            if (!currentPlayer.AddBet(testTable.bet - currentPlayer.bet))
+                            if (playerAction == Action.Check)
                             {
-                                Console.WriteLine("Not enough money to call");
-                            }
-                        }
-                        else if (playerAction == Action.Raise)
-                        {
-                            lastPlayer = currentPlayer;
-                            Console.WriteLine("Set total bet amount to:");
-                            decimal betInput = Decimal.Parse(Console.ReadLine());
-                            if (betInput <= testTable.bet)
-                            {
-                                Console.WriteLine("Bet amount was smaller or equal to current bet amount, checking instead.");
-                                if (!currentPlayer.AddBet(currentPlayer.bet - testTable.bet))
+                                if (!currentPlayer.AddBet(testTable.bet - currentPlayer.bet))
                                 {
                                     Console.WriteLine("Not enough money to call");
                                 }
                             }
-                            else
+                            else if (playerAction == Action.Raise)
                             {
-                                currentPlayer.AddBet(betInput);
-                                testTable.bet = currentPlayer.bet;
+                                lastPlayer = currentPlayer;
+                                Console.WriteLine("Set total bet amount to:");
+                                decimal betInput = Decimal.Parse(Console.ReadLine());
+                                if (betInput <= testTable.bet)
+                                {
+                                    Console.WriteLine("Bet amount was smaller or equal to current bet amount, checking instead.");
+                                    if (!currentPlayer.AddBet(currentPlayer.bet - testTable.bet))
+                                    {
+                                        Console.WriteLine("Not enough money to call");
+                                    }
+                                }
+                                else
+                                {
+                                    currentPlayer.AddBet(betInput);
+                                    testTable.bet = currentPlayer.bet;
+                                }
                             }
-                        }
-                        else if (playerAction == Action.Fold)
-                        {
-                            roundFinished = true;
+                            else if (playerAction == Action.Fold)
+                            {
+                                currentPlayer.folded = true;
+                            }
                         }
 
                         currentPlayer = testTable.GetNextPlayer(currentPlayer);
@@ -772,6 +783,10 @@ namespace PokeriPeli
             
             foreach (var player in players)
             {
+                if (player.folded)
+                {
+                    continue;
+                }
                 if (player.handType > biggestType)
                 {
                     biggestType = player.handType;
@@ -789,6 +804,10 @@ namespace PokeriPeli
 
             foreach (var player in players)
             {
+                if (player.folded)
+                {
+                    continue;
+                }
                 if (player.handType == biggestType && player.handValue == biggestValue)
                 {
                     winners.Add(player);

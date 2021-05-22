@@ -15,6 +15,8 @@ namespace PokeriPeli
         public HandType handType;
         public int handValue;
 
+        public bool folded = false;
+
         public bool isAI = false;
 
         public Action ActionPrompt(decimal targetBet)
