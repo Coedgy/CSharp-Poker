@@ -78,29 +78,18 @@ namespace PokeriPeli
             }
             else
             {
-                Console.WriteLine("This is not implemented yet..");
-                Environment.Exit(0);
+                //Console.WriteLine("This is not implemented yet..");
+                //Environment.Exit(0);
 
-                bool run = true;
-                while (run)
-                {
-                    PlayTestGame(playerCount);
+                PlayTestGame(playerCount);
 
-                    Console.WriteLine("Play a new game? (Yy/Nn)");
-                    string input = Console.ReadLine();
-                    if (input == "N" || input == "n")
-                    {
-                        run = false;
-                    }
-                    Console.Clear();
-                }
+                Console.WriteLine("Exiting...");
             }
-
-            Console.WriteLine("Exiting...");
         }
 
         static void PlayTestGame(int playerCount)
         { 
+            // Create a new table and add players to it.
             PokerTable testTable = new PokerTable();
             testTable.tableID = 1;
             testTable.smallBlind = 5.00M;
@@ -115,30 +104,54 @@ namespace PokeriPeli
                 testTable.AddPlayer(player);
             }
 
-            testTable.ShuffleDeck();
+            // Table is created, start the game-loop
+            bool run = true;
             
-            System.Console.WriteLine(" - ");
-            
-            testTable.DealCards();
-            
-
-            testTable.CalculateHands();
-            
-            foreach (Player player in testTable.players)
+            do
             {
-                System.Console.WriteLine(player.name + ": " + player.handType);
-                FormatCardList(player.handCards);
-                System.Console.WriteLine("");
-            }
-             
-            System.Console.WriteLine("Board: "); 
-            FormatCardList(testTable.board); 
-            System.Console.WriteLine("");
-            
-            
-            testTable.GetWinners();
+                testTable.tableStage = TableStage.preflop;
+                testTable.ShuffleDeck();
 
-            testTable.ClearCards();
+                Console.WriteLine("Your balance: " + testTable.players[0].balance);
+            
+                System.Console.WriteLine(" - ");
+            
+                testTable.DealCards();
+
+                testTable.CalculateHands();
+
+                System.Console.WriteLine("Your hand: " + testTable.players[0].handType);
+                FormatCardList(testTable.players[0].handCards);
+                System.Console.WriteLine("");
+                
+                System.Console.WriteLine("Board: "); 
+                FormatCardList(testTable.board); 
+                System.Console.WriteLine("");
+
+                testTable.GetWinners();
+
+                testTable.ClearCards();
+                
+                foreach (Player player in testTable.players)
+                {
+                    if (player == testTable.players[0])
+                    {
+                        break;
+                    }
+                    System.Console.WriteLine(player.name + ": " + player.handType);
+                    FormatCardList(player.handCards);
+                    System.Console.WriteLine("");
+                }
+                
+                Console.WriteLine("Keep playing? (Yy/Nn)");
+                string input = Console.ReadLine();
+                if (input == "N" || input == "n")
+                {
+                    run = false;
+                }
+                Console.Clear();
+                
+            } while (run);
         }
         
         static void CreateTestTable(int playerCount)
@@ -172,7 +185,7 @@ namespace PokeriPeli
                 { 
                     System.Console.WriteLine(" - ");
                 }
-                testTable.DealCards();
+                testTable.DealAllCards();
 
                 // testTable.board[0].value = 8;
                 // testTable.board[1].value = 8;
@@ -309,12 +322,14 @@ namespace PokeriPeli
         public int tableID;
         public List<Card> deck = new List<Card>();
         public List<Player> players = new List<Player>();
-        public int pot;
+        public decimal pot;
+        public decimal bet;
         public decimal smallBlind;
         public decimal bigBlind;
         public List<Seat> seats = new List<Seat>();
         public int maxPlayers = 10;
         public List<Card> board = new List<Card>();
+        public TableStage tableStage = TableStage.preflop;
 
         Random r = new Random();
 
@@ -361,7 +376,7 @@ namespace PokeriPeli
             }
         }
 
-        public void DealCards()
+        public void DealAllCards()
         {
             for (int i = 0; i < 2; i++)
             {
@@ -376,6 +391,45 @@ namespace PokeriPeli
             }
 
             for (int i = 0; i < 5; i++)
+            {
+                board.Add(deck[0]);
+                deck.RemoveAt(0);
+            }
+        }
+
+        public void DealCards()
+        {
+            if (tableStage == TableStage.preflop)
+            {
+                for (int i = 0; i < 2; i++)
+                {
+                    foreach (Seat seat in seats)
+                    {
+                        if (!seat.isEmpty())
+                        {
+                            seat.player.handCards.Add(deck[0]);
+                            deck.RemoveAt(0);
+                        }
+                    }
+                }
+                tableStage++;
+            } 
+            else if (tableStage == TableStage.flop)
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    board.Add(deck[0]);
+                    deck.RemoveAt(0);
+                }
+                tableStage++;
+            }
+            else if (tableStage == TableStage.turn)
+            {
+                board.Add(deck[0]);
+                deck.RemoveAt(0);
+                tableStage++;
+            }
+            else
             {
                 board.Add(deck[0]);
                 deck.RemoveAt(0);
