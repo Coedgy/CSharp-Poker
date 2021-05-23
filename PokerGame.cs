@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Net.Mime;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 namespace PokeriPeli
 {
@@ -11,17 +9,18 @@ namespace PokeriPeli
     {
         public static StatMode statMode = StatMode.Disabled;
         
-        public static int straightFlushCount = 0;
-        public static int fourOfAKindCount = 0;
-        public static int fullHouseCount = 0;
-        public static int flushCount = 0;
-        public static int straightCount = 0;
+        public static int straightFlushCount;
+        public static int fourOfAKindCount;
+        public static int fullHouseCount;
+        public static int flushCount;
+        public static int straightCount;
         
+        // ReSharper disable once NotAccessedField.Global
         public static List<PokerTable> tableList;
 
-        static void Main(string[] args)
+        static void Main()
         {
-            System.Console.Clear();
+            Console.Clear();
             //System.Console.BackgroundColor = System.ConsoleColor.DarkBlue;
 
             tableList = new List<PokerTable>();
@@ -31,8 +30,6 @@ namespace PokeriPeli
 
         static void CIControl()
         {
-            int playerCount;
-
             Console.WriteLine("Gameplay modes:");
             Console.WriteLine("0 - Play-mode");
             Console.WriteLine("1 - Instant game");
@@ -42,8 +39,7 @@ namespace PokeriPeli
             Console.WriteLine("4 - All players");
 
             var answer = Console.ReadLine();
-            int x = 0;
-            if (!Int32.TryParse(answer, out x))
+            if (!Int32.TryParse(answer, out var x))
             {
                 throw new Exception("Invalid input");
             }
@@ -53,12 +49,11 @@ namespace PokeriPeli
             Console.WriteLine("Player count: ");
             
             answer = Console.ReadLine();
-            x = 0;
             if (!Int32.TryParse(answer, out x))
             {
                 throw new Exception("Invalid input");
             }
-            playerCount = x;
+            var playerCount = x;
 
             if (statMode != 0)
             {
@@ -90,18 +85,12 @@ namespace PokeriPeli
         static void PlayTestGame(int playerCount)
         { 
             // Create a new table and add players to it.
-            PokerTable testTable = new PokerTable();
-            testTable.tableID = 1;
-            testTable.smallBlind = 5.00M;
-            testTable.bigBlind = 10.00M;
+            var testTable = new PokerTable {tableID = 1, smallBlind = 5.00M, bigBlind = 10.00M};
             testTable.InitializeTable();
 
-            for (int i = 0; i < playerCount; i++)
+            for (var i = 0; i < playerCount; i++)
             {
-                Player player = new Player();
-                player.name = "Player " + (i + 1);
-                player.ID = i + 1;
-                player.isAI = true;
+                var player = new Player {name = "Player " + (i + 1), ID = i + 1, isAI = true};
                 testTable.AddPlayer(player);
             }
 
@@ -216,7 +205,7 @@ namespace PokeriPeli
                     Console.WriteLine("Your balance: " + _player.balance);
                     Console.WriteLine("Your stack: " + _player.stack);
                 
-                    System.Console.WriteLine(" - ");
+                    Console.WriteLine(" - ");
                     
                     if (testTable.smallBlindSeat == playerSeat)
                     {
@@ -231,20 +220,20 @@ namespace PokeriPeli
 
                     if (testTable.tableStage == TableStage.flop)
                     {
-                        System.Console.WriteLine("Your hand: ");
+                        Console.WriteLine("Your hand: ");
                     }
                     else
                     {
                         testTable.CalculateHands();
-                        System.Console.WriteLine("Your hand: " + testTable.players[0].handType);
+                        Console.WriteLine("Your hand: " + testTable.players[0].handType);
                     }
                     
                     FormatCardList(testTable.players[0].handCards);
-                    System.Console.WriteLine("");
+                    Console.WriteLine("");
                 
-                    System.Console.WriteLine("Board: "); 
+                    Console.WriteLine("Board: "); 
                     FormatCardList(testTable.board); 
-                    System.Console.WriteLine("");
+                    Console.WriteLine("");
 
                     bool turnFinished = false;
                     Player lastPlayer = testTable.bigBlindSeat.player;
@@ -262,7 +251,7 @@ namespace PokeriPeli
                             Console.WriteLine("Current pot: " + testTable.pot);
                             Console.WriteLine("Current bet: " + testTable.bet);
                             Console.WriteLine("Your in: " + _player.bet);
-                            System.Console.WriteLine("");
+                            Console.WriteLine("");
                         }
 
                         if (!currentPlayer.folded)
@@ -337,7 +326,7 @@ namespace PokeriPeli
 
                 testTable.GetWinners();
                 
-                System.Console.WriteLine("");
+                Console.WriteLine("");
 
                 foreach (Player player in testTable.players)
                 {
@@ -345,9 +334,9 @@ namespace PokeriPeli
                     {
                         continue;
                     }
-                    System.Console.WriteLine(player.name + ": " + player.handType);
+                    Console.WriteLine(player.name + ": " + player.handType);
                     FormatCardList(player.handCards);
-                    System.Console.WriteLine("");
+                    Console.WriteLine("");
                 }
                 
                 testTable.ClearCards();
@@ -392,7 +381,7 @@ namespace PokeriPeli
             
                 if (statMode == StatMode.Disabled)
                 { 
-                    System.Console.WriteLine(" - ");
+                    Console.WriteLine(" - ");
                 }
                 testTable.DealAllCards();
 
@@ -410,14 +399,14 @@ namespace PokeriPeli
                 { 
                     foreach (Player player in testTable.players)
                     {
-                        System.Console.WriteLine(player.name + ": " + player.handType);
+                        Console.WriteLine(player.name + ": " + player.handType);
                         FormatCardList(player.handCards);
-                        System.Console.WriteLine("");
+                        Console.WriteLine("");
                     }
                      
-                    System.Console.WriteLine("Board: "); 
+                    Console.WriteLine("Board: "); 
                     FormatCardList(testTable.board); 
-                    System.Console.WriteLine("");
+                    Console.WriteLine("");
                 }
 
                 testTable.GetWinners();
@@ -426,19 +415,19 @@ namespace PokeriPeli
                     Player targetPlayer = testTable.players[0];
                     if (targetPlayer.handType == HandType.FullHouse)
                     {
-                        Program.fullHouseCount++;
+                        fullHouseCount++;
                     }else if (targetPlayer.handType == HandType.StraightFlush)
                     {
-                        Program.straightFlushCount++;
+                        straightFlushCount++;
                     }else if (targetPlayer.handType == HandType.FourOfAKind)
                     {
-                        Program.fourOfAKindCount++;
+                        fourOfAKindCount++;
                     }else if (targetPlayer.handType == HandType.Flush)
                     {
-                        Program.flushCount++;
+                        flushCount++;
                     }else if (targetPlayer.handType == HandType.Straight)
                     {
-                        Program.straightCount++;
+                        straightCount++;
                     }
                 }
                 else if (statMode == StatMode.AllPlayers)
@@ -447,19 +436,19 @@ namespace PokeriPeli
                     {
                         if (player.handType == HandType.FullHouse)
                         {
-                            Program.fullHouseCount++;
+                            fullHouseCount++;
                         }else if (player.handType == HandType.StraightFlush)
                         {
-                            Program.straightFlushCount++;
+                            straightFlushCount++;
                         }else if (player.handType == HandType.FourOfAKind)
                         {
-                            Program.fourOfAKindCount++;
+                            fourOfAKindCount++;
                         }else if (player.handType == HandType.Flush)
                         {
-                            Program.flushCount++;
+                            flushCount++;
                         }else if (player.handType == HandType.Straight)
                         {
-                            Program.straightCount++;
+                            straightCount++;
                         }
                     }
                 }
@@ -482,24 +471,24 @@ namespace PokeriPeli
         {
             foreach (Card card in list)
             {
-                System.Console.Write(" | ");
+                Console.Write(" | ");
                 string color;
                 if (card.color == Color.clubs)
                 {
                     color = "♣";
-                    System.Console.ForegroundColor = ConsoleColor.White;
+                    Console.ForegroundColor = ConsoleColor.White;
                 }else if (card.color == Color.spades)
                 {
                     color = "♠";
-                    System.Console.ForegroundColor = ConsoleColor.White;
+                    Console.ForegroundColor = ConsoleColor.White;
                 }else if (card.color == Color.diamonds)
                 {
                     color = "♦";
-                    System.Console.ForegroundColor = ConsoleColor.Red;
+                    Console.ForegroundColor = ConsoleColor.Red;
                 }else
                 {
                     color = "♥";
-                    System.Console.ForegroundColor = ConsoleColor.Red;
+                    Console.ForegroundColor = ConsoleColor.Red;
                 }
 
                 string value;
@@ -519,9 +508,9 @@ namespace PokeriPeli
                 {
                     value = card.value.ToString();
                 }
-                System.Console.Write(color);
-                System.Console.ForegroundColor = ConsoleColor.White;
-                System.Console.WriteLine(" " + value);
+                Console.Write(color);
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine(" " + value);
             }
         }
     }
@@ -533,8 +522,8 @@ namespace PokeriPeli
         public List<Card> deck = new List<Card>();
         public List<Player> players = new List<Player>();
         
-        public decimal pot = 0.0M;
-        public decimal bet = 0.0M;
+        public decimal pot;
+        public decimal bet;
 
         public decimal minBet = 1.0M;
         public decimal minRaiseFactor = 2.0M;
@@ -909,16 +898,17 @@ namespace PokeriPeli
 
     public class PokerGame
     {
+        [SuppressMessage("ReSharper", "AccessToModifiedClosure")]
+        [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
         public static Tuple<HandType, int> GetBestHand(List<Card> hand, List<Card> board)
         {
             List<Card> cards = new List<Card>();
-            List<Card> cardsDesc = new List<Card>();
             board.ForEach(x => cards.Add(x));
             hand.ForEach(x => cards.Add(x));
-            cards.FindAll(x => x.value == 1).ToList().ForEach(x => cards.Add(new Card(){color = x.color, ID = x.ID, value = 14}));
+            cards.FindAll(x => x.value == 1).ToList().ForEach(x => cards.Add(new Card {color = x.color, ID = x.ID, value = 14}));
 
             cards = cards.OrderBy(x => x.value).ToList();
-            cardsDesc = cards.OrderByDescending(x => x.value).ToList();
+            var cardsDesc = cards.OrderByDescending(x => x.value).ToList();
 
             // Straight flush
             int chain = 0;
@@ -1268,9 +1258,9 @@ namespace PokeriPeli
                     {
                         if (card.value == 1)
                         {
-                            return new Tuple<HandType, int>(HandType.Pair, card.value * 20000 + cards[cards.Count-1].value * 100 + cards.OrderByDescending(x => x.value).ToList().FirstOrDefault(x => x.value != card.value && x != cards[cards.Count-1]).value * 10 + cards.OrderByDescending(x => x.value).ToList().FirstOrDefault(x => x.value != card.value && x != cards[cards.Count-1] && x != cards.OrderByDescending(x => x.value).ToList().FirstOrDefault(x => x.value != card.value && x != cards[cards.Count-1])).value);
+                            return new Tuple<HandType, int>(HandType.Pair, card.value * 20000 + cards[cards.Count-1].value * 100 + cards.OrderByDescending(x => x.value).ToList().FirstOrDefault(x => x.value != card.value && x != cards[cards.Count-1]).value * 10 + cards.OrderByDescending(x => x.value).ToList().FirstOrDefault(x => x.value != card.value && x != cards[cards.Count-1] && x != cards.OrderByDescending(y => y.value).ToList().FirstOrDefault(y => y.value != card.value && y != cards[cards.Count-1])).value);
                         }
-                        return new Tuple<HandType, int>(HandType.Pair, card.value * 2000 + cards[cards.Count-1].value * 100 + cards.OrderByDescending(x => x.value).ToList().FirstOrDefault(x => x.value != card.value && x != cards[cards.Count-1]).value * 10 + cards.OrderByDescending(x => x.value).ToList().FirstOrDefault(x => x.value != card.value && x != cards[cards.Count-1] && x != cards.OrderByDescending(x => x.value).ToList().FirstOrDefault(x => x.value != card.value && x != cards[cards.Count-1])).value);
+                        return new Tuple<HandType, int>(HandType.Pair, card.value * 2000 + cards[cards.Count-1].value * 100 + cards.OrderByDescending(x => x.value).ToList().FirstOrDefault(x => x.value != card.value && x != cards[cards.Count-1]).value * 10 + cards.OrderByDescending(x => x.value).ToList().FirstOrDefault(x => x.value != card.value && x != cards[cards.Count-1] && x != cards.OrderByDescending(z => z.value).ToList().FirstOrDefault(z => z.value != card.value && z != cards[cards.Count-1])).value);
                     }
                     chain = 0;
                 }
@@ -1291,10 +1281,8 @@ namespace PokeriPeli
             {
                 return true;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
     }
 

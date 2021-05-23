@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
 
 namespace PokeriPeli
@@ -7,7 +6,7 @@ namespace PokeriPeli
     public class Player
     {
         public int ID;
-        public decimal balance;
+        public decimal balance = 0.0M;
         public string name;
         public decimal stack = 50000.0M;
         public decimal bet;
