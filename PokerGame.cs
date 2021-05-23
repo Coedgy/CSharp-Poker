@@ -272,6 +272,7 @@ namespace PokeriPeli
                                 if (!currentPlayer.AddBet(testTable.bet - currentPlayer.bet))
                                 {
                                     Console.WriteLine("Not enough money to call");
+                                    currentPlayer.folded = true; //TODO: All-in and sidepots
                                 }
                             }
                             else if (playerAction == Action.Raise)
