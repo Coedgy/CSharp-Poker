@@ -282,18 +282,38 @@ namespace PokeriPeli
                                 lastPlayer = testTable.GetPreviousPlayer(currentPlayer);
                                 Console.WriteLine("Set total bet amount to:");
                                 decimal betInput = Decimal.Parse(Console.ReadLine());
-                                if (betInput <= testTable.bet)
+
+                                if (testTable.bet > 0)
                                 {
-                                    Console.WriteLine("Bet amount was smaller or equal to current bet amount, checking/calling instead.");
-                                    if (!currentPlayer.AddBet(testTable.bet - currentPlayer.bet))
+                                    if (betInput < testTable.bet * testTable.minRaiseFactor)
                                     {
-                                        Console.WriteLine("Not enough money to call");
+                                        Console.WriteLine("Bet amount was smaller than minimum raise amount, checking/calling instead.");
+                                        if (!currentPlayer.AddBet(testTable.bet - currentPlayer.bet))
+                                        {
+                                            Console.WriteLine("Not enough money to call");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        currentPlayer.AddBet(betInput);
+                                        testTable.bet = currentPlayer.bet;
                                     }
                                 }
                                 else
                                 {
-                                    currentPlayer.AddBet(betInput);
-                                    testTable.bet = currentPlayer.bet;
+                                    if (betInput < testTable.bet + testTable.minBet)
+                                    {
+                                        Console.WriteLine("Bet amount was smaller than minimum bet, checking/calling instead.");
+                                        if (!currentPlayer.AddBet(testTable.bet - currentPlayer.bet))
+                                        {
+                                            Console.WriteLine("Not enough money to call");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        currentPlayer.AddBet(betInput);
+                                        testTable.bet = currentPlayer.bet;
+                                    }
                                 }
                             }
                             else if (playerAction == Action.Fold)
@@ -509,15 +529,23 @@ namespace PokeriPeli
     public class PokerTable
     {
         public int tableID;
+        
         public List<Card> deck = new List<Card>();
         public List<Player> players = new List<Player>();
+        
         public decimal pot = 0.0M;
         public decimal bet = 0.0M;
+
+        public decimal minBet = 1.0M;
+        public decimal minRaiseFactor = 2.0M;
+        
         public decimal smallBlind;
         public decimal bigBlind;
+        
         public List<Seat> seats = new List<Seat>();
         public int maxPlayers = 10;
         public List<Card> board = new List<Card>();
+        
         public TableStage tableStage = TableStage.preflop;
 
         public Seat dealerSeat;
