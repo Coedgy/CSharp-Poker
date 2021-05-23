@@ -186,6 +186,8 @@ namespace PokeriPeli
                         else
                         {
                             Player player = seat.player;
+                            Console.Write(player.stack + " ");
+                            
                             if (player.folded)
                             {
                                 Console.Write("FOLDED - ");
@@ -282,8 +284,8 @@ namespace PokeriPeli
                                 decimal betInput = Decimal.Parse(Console.ReadLine());
                                 if (betInput <= testTable.bet)
                                 {
-                                    Console.WriteLine("Bet amount was smaller or equal to current bet amount, checking instead.");
-                                    if (!currentPlayer.AddBet(currentPlayer.bet - testTable.bet))
+                                    Console.WriteLine("Bet amount was smaller or equal to current bet amount, checking/calling instead.");
+                                    if (!currentPlayer.AddBet(testTable.bet - currentPlayer.bet))
                                     {
                                         Console.WriteLine("Not enough money to call");
                                     }

@@ -26,7 +26,11 @@ namespace PokeriPeli
                 return Action.Check;
             }
 
-            if (targetBet > bet)
+            if (targetBet - bet >= stack)
+            {
+                Console.WriteLine("(A)ll in / (F)old:");
+            }
+            else if (targetBet > bet)
             {
                 Console.WriteLine("(C)all / (R)aise / (F)old:");
             }
