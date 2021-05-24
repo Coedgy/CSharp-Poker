@@ -85,7 +85,7 @@ namespace PokeriPeli
         static void PlayTestGame(int playerCount)
         { 
             // Create a new table and add players to it.
-            var testTable = new PokerTable {tableID = 1, smallBlind = 5.00M, bigBlind = 10.00M};
+            var testTable = new PokerTable {tableID = 1, smallBlind = 25.00M, bigBlind = 50.00M};
             testTable.InitializeTable();
 
             for (var i = 0; i < playerCount; i++)

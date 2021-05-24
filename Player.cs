@@ -8,7 +8,7 @@ namespace PokeriPeli
         public int ID;
         public decimal balance = 0.0M;
         public string name;
-        public decimal stack = 50000.0M;
+        public decimal stack = 2000.0M;
         public decimal bet;
         public List<Card> handCards = new List<Card>();
         public HandType handType;
