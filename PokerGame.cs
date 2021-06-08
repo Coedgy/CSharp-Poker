@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
@@ -18,14 +19,40 @@ namespace PokeriPeli
         // ReSharper disable once NotAccessedField.Global
         public static List<PokerTable> tableList;
 
-        static void Main()
+        public static int GamesPerSecondTest(int seconds)
         {
-            Console.Clear();
-            //System.Console.BackgroundColor = System.ConsoleColor.DarkBlue;
+            Stopwatch s = new Stopwatch();
+            s.Start();
+            int games = 0;
 
-            tableList = new List<PokerTable>();
-            Cards.InitializeList();
-            CIControl();
+            while (s.Elapsed < TimeSpan.FromSeconds(seconds))
+            {
+                CreateTestTable(5);
+                games++;
+            }
+            
+            s.Stop();
+            return games;
+        }
+        
+        static void Main(string[] args)
+        {
+            if (args.Contains("-d"))
+            {
+                tableList = new List<PokerTable>();
+                Cards.InitializeList();
+
+                Console.WriteLine(GamesPerSecondTest(1));
+            }
+            else
+            {
+                Console.Clear();
+                //System.Console.BackgroundColor = System.ConsoleColor.DarkBlue;
+
+                tableList = new List<PokerTable>();
+                Cards.InitializeList();
+                CIControl();
+            }
         }
 
         static void CIControl()
