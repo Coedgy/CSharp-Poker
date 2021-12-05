@@ -35,7 +35,7 @@ namespace PokeriPeli
             return games;
         }
         
-        static void Main(string[] args)
+        static void OldMain(string[] args)
         {
             if (args.Contains("-d"))
             {
