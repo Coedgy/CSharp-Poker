@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace PokeriPeli
+namespace CSharp_Poker
 {
     public class Player
     {

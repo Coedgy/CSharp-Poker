@@ -4,10 +4,12 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
-namespace PokeriPeli
+namespace CSharp_Poker
 {
     class Program
     {
+        public static string BaseURL = "http://localhost:7000/api";
+
         public static StatMode statMode = StatMode.Disabled;
         
         public static int straightFlushCount;
