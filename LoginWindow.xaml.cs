@@ -12,6 +12,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 
 namespace CSharp_Poker
 {
@@ -21,6 +24,8 @@ namespace CSharp_Poker
     public partial class LoginWindow : Window
     {
         private bool loginAction = false;
+
+        static HttpClient client = new HttpClient();
 
         public LoginWindow()
         {
@@ -36,10 +41,44 @@ namespace CSharp_Poker
             }
         }
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        private async Task<bool> LoginAction()
         {
-            loginAction = true;
-            this.Close();
+            try
+            {
+                List<KeyValuePair<string, string>> formContent = new List<KeyValuePair<string, string>>();
+                formContent.Add(new KeyValuePair<string, string>("username", UsernameInput.Text));
+                formContent.Add(new KeyValuePair<string, string>("password", PasswordInput.Text));
+
+                var content = new FormUrlEncodedContent(formContent);
+
+                var message = await client.PostAsync(Program.BaseURL + "/users/login", content);
+
+                message.Dispose();
+
+                if (message.StatusCode == HttpStatusCode.Accepted)
+                {
+                    client.CancelPendingRequests();
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+            client.CancelPendingRequests();
+            return false;
+        }
+
+        private async void SubmitButtonClick(object sender, RoutedEventArgs e)
+        {
+            if (await LoginAction())
+            {
+                loginAction = true;
+                this.Close();
+            }
+
+            MessageBox.Show("lol"); //TODO: Proper error messages
         }
     }
 }

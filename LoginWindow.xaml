@@ -5,8 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CSharp_Poker"
         mc:Ignorable="d"
-        Title="MainWindow" Height="285" Width="346" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Closing="Window_Closing">
+        Title="Niisto Poker" Height="285" Width="346" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Closing="Window_Closing" WindowStyle="None">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="32" ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}" />
+    </WindowChrome.WindowChrome>
     <Grid>
-        <Button Content="Button" HorizontalAlignment="Center" Margin="0,209,0,0" VerticalAlignment="Top" Click="Button_Click_1"/>
+        <Button x:Name="SubmitButton" Content="Button" HorizontalAlignment="Center" Margin="0,209,0,0" VerticalAlignment="Top" Click="SubmitButtonClick"/>
+        <TextBox x:Name="UsernameInput" HorizontalAlignment="Left" Margin="26,43,0,0" Text="TextBox" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+        <TextBox x:Name="PasswordInput" HorizontalAlignment="Left" Margin="26,0,0,0" Text="TextBox" TextWrapping="Wrap" VerticalAlignment="Center" Width="120"/>
     </Grid>
 </Window>
