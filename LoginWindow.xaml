@@ -5,13 +5,56 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CSharp_Poker"
         mc:Ignorable="d"
-        Title="Niisto Poker" Height="285" Width="346" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Closing="Window_Closing" WindowStyle="None">
+        Title="Niisto Poker" Height="386" Width="356" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Closing="Window_Closing" Background="#FF171112" BorderBrush="#FFE06767" Foreground="#FFBDBDBD" BorderThickness="1,1,1,1" WindowStyle="None">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="32" ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}" />
     </WindowChrome.WindowChrome>
     <Grid>
-        <Button x:Name="SubmitButton" Content="Button" HorizontalAlignment="Center" Margin="0,209,0,0" VerticalAlignment="Top" Click="SubmitButtonClick"/>
-        <TextBox x:Name="UsernameInput" HorizontalAlignment="Left" Margin="26,43,0,0" Text="TextBox" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
-        <TextBox x:Name="PasswordInput" HorizontalAlignment="Left" Margin="26,0,0,0" Text="TextBox" TextWrapping="Wrap" VerticalAlignment="Center" Width="120"/>
+        <Button x:Name="SubmitButton" Content="Kirjaudu sisään" HorizontalAlignment="Center" Margin="0,308,0,0" VerticalAlignment="Top" Click="SubmitButtonClick" Height="48" Width="306" Foreground="#FFFBFBFB" FontFamily="Poppins" FontWeight="Light" FontSize="20" IsDefault="True" BorderBrush="#FF722B2B">
+            <Button.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <LinearGradientBrush.RelativeTransform>
+                        <TransformGroup>
+                            <ScaleTransform CenterY="0.5" CenterX="0.5"/>
+                            <SkewTransform CenterY="0.5" CenterX="0.5"/>
+                            <RotateTransform Angle="150.945" CenterY="0.5" CenterX="0.5"/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </LinearGradientBrush.RelativeTransform>
+                    <GradientStop Color="#FFBD3939" Offset="0"/>
+                    <GradientStop Color="#FFBD4F4F" Offset="1"/>
+                </LinearGradientBrush>
+            </Button.Background>
+            <Button.Style>
+                <Style TargetType="{x:Type Button}">
+                    <Setter Property="Background" Value="Green"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type Button}">
+                                <Border Background="{TemplateBinding Background}">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="DarkGoldenrod"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
+        <TextBox x:Name="UsernameInput" HorizontalAlignment="Center" Margin="0,162,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" Height="30" FontSize="18" Background="#FF342D2D" Foreground="#FFE8E8E8" SelectionBrush="#FFFF4F46" FontFamily="Poppins"/>
+        <Label Content="Niisto Poker" Margin="10,20,10,0" VerticalAlignment="Top" Height="105" FontFamily="Poppins" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="48" Foreground="#FFEAEAEA"/>
+        <PasswordBox x:Name="PasswordInput" HorizontalAlignment="Center" Margin="0,239,0,0" VerticalAlignment="Top" Width="304" Height="29" FontSize="18" SelectionBrush="#FFFF4F46" Background="#FF342D2D" BorderBrush="#FFABADB3" BorderThickness="1,1,1,1" Foreground="#FFE8E8E8" FontFamily="Poppins"/>
+        <Label Content="Salasana" HorizontalAlignment="Left" Margin="24,202,0,0" VerticalAlignment="Top" Width="152" Foreground="White" FontFamily="Poppins" FontSize="20" Height="32"/>
+        <Label Content="Käyttäjätunnus" HorizontalAlignment="Left" Margin="24,125,0,0" VerticalAlignment="Top" Width="194" Foreground="White" FontFamily="Poppins" FontSize="20" Height="37"/>
+        <Button x:Name="CloseButton" Content="X" VerticalAlignment="Top" Height="29" BorderThickness="0,0,0,0" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" Margin="0,-5,2,0" IsCancel="True" FontSize="20" FontFamily="Poppins" Click="CloseButton_Click" HorizontalAlignment="Right" Width="18"/>
+        <Label HorizontalAlignment="Left" Margin="24,273,0,0" VerticalAlignment="Top" Width="193" Foreground="#FFDADADA" FontFamily="Poppins">
+            <Hyperlink NavigateUri="https://niisto.fi" RequestNavigate="Hyperlink_RequestNavigate" Foreground="#FFE2E2E2">
+                <TextBlock Text="Unohditko salasanasi?" Foreground="#FFCDD4DC" TextDecorations="Underline"/>
+            </Hyperlink>
+        </Label>
     </Grid>
 </Window>
