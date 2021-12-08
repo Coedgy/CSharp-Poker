@@ -23,5 +23,12 @@ namespace CSharp_Poker
         {
             InitializeComponent();
         }
+
+        private void StartLocalGame(object sender, RoutedEventArgs e)
+        {
+            GameWindow screen = new GameWindow();
+            screen.Show();
+            this.Close();
+        }
     }
 }

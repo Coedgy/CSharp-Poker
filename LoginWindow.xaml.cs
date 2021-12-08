@@ -75,6 +75,8 @@ namespace CSharp_Poker
 
         private async void SubmitButtonClick(object sender, RoutedEventArgs e)
         {
+            loginAction = true;
+            this.Close();
             if (!loginCheckRunning)
             {
                 loginCheckRunning = true;

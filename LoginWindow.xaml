@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CSharp_Poker"
         mc:Ignorable="d"
-        Title="Niisto Poker" Height="386" Width="356" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Closing="Window_Closing" Background="#FF171112" BorderBrush="#FFE06767" Foreground="#FFBDBDBD" BorderThickness="1,1,1,1" WindowStyle="None">
+        Title="Niisto Poker" Height="386" Width="356" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Closing="Window_Closing" Background="#FF1D1C1C" BorderBrush="#FFE06767" Foreground="#FFBDBDBD" BorderThickness="1,1,1,1" WindowStyle="None">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="32" ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}" />
     </WindowChrome.WindowChrome>
