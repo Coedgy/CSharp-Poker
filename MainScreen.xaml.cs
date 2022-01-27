@@ -19,6 +19,9 @@ namespace CSharp_Poker
     /// </summary>
     public partial class MainScreen : Window
     {
+
+        public Image image;
+
         public MainScreen()
         {
             InitializeComponent();
